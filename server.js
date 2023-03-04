@@ -1,5 +1,6 @@
 const enigma = require("enigma.js");
 const schema = require("enigma.js/schemas/12.20.0.json");
+const ws = require("ws");
 
 // The app to connect to
 const appId = "96a7d192-860d-4ecc-90e7-a404e81154b2";
