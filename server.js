@@ -16,7 +16,7 @@ session.on('traffic:received', data => console.log('received:', data));
 // open the socket and eventually receive the QIX global API, and then close
 // the session:
 session.open()
-  .then(global => console.log(global.engineVersion()))
+  .then((global) => console.log(global.engineVersion()))
   .then(() => session.close())
   .then(() => console.log('Session closed'))
   .catch(err => console.log('Something went wrong :(', err));
