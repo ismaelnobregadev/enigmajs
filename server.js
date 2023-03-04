@@ -1,23 +1,43 @@
-const enigma = require('enigma.js');
-const WebSocket = require('ws');
-const schema = require('enigma.js/schemas/12.20.0.json');
+const enigma = require("enigma.js");
+const schema = require("enigma.js/schemas/12.20.0.json");
+
+// The app to connect to
+const appId = "96a7d192-860d-4ecc-90e7-a404e81154b2";
 
 // create a new session:
 const session = enigma.create({
   schema,
-  url: 'wss://qap.sebrae.com.br/app/96a7d192-860d-4ecc-90e7-a404e81154b2',
-  createSocket: url => new WebSocket(url),
+  url: `wss://qap.sebrae.com.br/app/${appId}`,
+  createSocket: url => new WebSocket(url)
 });
 
-// bind traffic events to log what is sent and received on the socket:
-session.on('traffic:sent', data => console.log('sent:', data));
-session.on('traffic:received', data => console.log('received:', data));
+// Open a session
+const global = session.open();
+// Connect to an app
+const app = global.then(g => g.openDoc(appId));
+// Create a generic object with the sales calculation
+const salesObj = app.then(a =>
+  a.createSessionObject({
+    qInfo: { qType: "session" },
+    sales: {
+      qValueExpression: "=sum([MGE Transporte])"
+    }
+  })
+);
 
-// open the socket and eventually receive the QIX global API, and then close
-// the session:
-session.open()
-  .then((qix) => qix.openDoc('96a7d192-860d-4ecc-90e7-a404e81154b2'))
-  .then(result => console.log(result))
-  .then(() => session.close())
-  .then(() => console.log('Session closed'))
-  .catch(err => console.log('Something went wrong :(', err));
+// Render data from the sales object
+salesObj.then(o => {
+  // Whenever the sales object invalidates,
+  // get the latest layout and render the sales value
+  o.on("changed", () => {
+    o.getLayout().then(layout => render(layout.sales));
+  });
+
+  // Get the initial layout and render the sales value
+  o.getLayout().then(layout => render(layout.sales));
+  
+});
+
+function render(v) {
+  console.log(v);
+}
