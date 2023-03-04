@@ -21,7 +21,7 @@ const salesObj = app.then(a =>
   a.createSessionObject({
     qInfo: { qType: "session" },
     sales: {
-      qValueExpression: "=sum([MGE Transporte])"
+      qValueExpression: "=sum(valorsaláriofixo)"
     }
   })
 );
