@@ -40,5 +40,7 @@ salesObj.then(o => {
 });
 
 function render(v) {
-  console.log(v);
+  document.getElementById("app").innerHTML = `
+    Salário = ${v}
+  `;
 }
